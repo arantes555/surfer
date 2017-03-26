@@ -36,7 +36,7 @@ router.all('/transmission/*', function (req, res) {
     target: 'http://localhost:9091',
     xfwd: true,
     changeOrigin: true,
-    cookieDomainRewrite: true,
+    cookieDomainRewrite: { '*': 'river.zde.land' },
     preserveHeaderKeyCase: true,
     headers
   })
