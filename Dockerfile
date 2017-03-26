@@ -3,6 +3,9 @@ MAINTAINER Johannes Zellner <johannes@nebulon.de>
 
 ENV PATH /usr/local/node-6.9.5/bin:$PATH
 
+RUN apt-get update -y
+RUN apt-get install -y transmission-daemon
+
 RUN mkdir -p /app/code
 WORKDIR /app/code
 
@@ -11,6 +14,8 @@ ADD app /app/code/app
 ADD cli /app/code/cli
 
 ADD package.json server.js start.sh README.md /app/code/
+
+ADD transmission/settings.json /etc/transmission-daemon/settings.json.default
 
 RUN npm install --production
 

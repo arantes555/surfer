@@ -1,7 +1,7 @@
 {
-  "name": "cloudron-surfer",
+  "name": "cloudron-river",
   "version": "3.0.0",
-  "description": "Simple file server",
+  "description": "Simple torrent client & file server",
   "main": "server.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/_mocha -R spec ./test/test.js"
@@ -17,7 +17,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nebulade/surfer.git"
+    "url": "https://github.com/arantes555/surfer.git"
   },
   "dependencies": {
     "async": "^1.5.2",
@@ -33,6 +33,7 @@
     "del": "^2.2.0",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
+    "http-proxy": "^1.16.2",
     "mkdirp": "^0.5.1",
     "morgan": "^1.7.0",
     "multiparty": "^4.1.2",
