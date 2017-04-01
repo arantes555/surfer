@@ -11,7 +11,7 @@
   ],
   "version": "0.6.0",
   "healthCheckPath": "/api/healthcheck",
-  "httpPort": 3000,
+  "httpPort": 80,
   "manifestVersion": 1,
   "website": "https://github.com/arantes555/surfer",
   "contactEmail": "support@cloudron.io",

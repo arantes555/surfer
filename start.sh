@@ -11,5 +11,6 @@ fi
 
 chown -R cloudron:cloudron /app/data
 
+service nginx start
 /usr/local/bin/gosu cloudron:cloudron transmission-daemon --config-dir /app/data/transmission-daemon/
 /usr/local/bin/gosu cloudron:cloudron node /app/code/server.js /app/data

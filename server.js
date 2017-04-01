@@ -15,32 +15,12 @@ const multipart_ = require('./src/multipart')
 const mkdirp = require('mkdirp')
 const auth = require('./src/auth.js')
 const files_ = require('./src/files.js')
-const httpProxy = require('http-proxy')
-const apiProxy = httpProxy.createProxyServer()
 
 const app = express()
 const router = new express.Router()
 
 const multipart = multipart_({ maxFieldsSize: 2 * 1024, limit: '512mb', timeout: 3 * 60 * 1000 })
 const files = files_(path.resolve(__dirname, process.argv[ 2 ] || 'files'))
-
-router.all('/transmission/*', function (req, res) {
-  const headers = {}
-  if (req.headers[ 'X-Transmission-Session-Id' ]) headers[ 'X-Transmission-Session-Id' ] = req.headers[ 'X-Transmission-Session-Id' ]
-  else if (req.headers[ 'x-transmission-session-id' ]) headers[ 'x-transmission-session-id' ] = req.headers[ 'x-transmission-session-id' ]
-
-  console.log('headers :', headers)
-  console.log('req.headers :', req.headers)
-
-  apiProxy.web(req, res, {
-    target: 'http://localhost:9091',
-    xfwd: true,
-    changeOrigin: true,
-    cookieDomainRewrite: { '*': 'river.zde.land' },
-    preserveHeaderKeyCase: true,
-    headers
-  })
-})
 
 router.get('/api/files/*', auth.verify, files.get)
 router.put('/api/files/*', auth.verify, multipart, files.put)
