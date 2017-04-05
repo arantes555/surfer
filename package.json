@@ -37,7 +37,7 @@
     "morgan": "^1.7.0",
     "multiparty": "^4.1.2",
     "passport": "^0.2.2",
-    "passport-ldapjs": "^1.0.2",
+    "passport-cloudron": "^0.3.3",
     "readline-sync": "^1.4.1",
     "request": "^2.69.0",
     "safetydance": "^0.1.1",
