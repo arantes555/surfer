@@ -11,7 +11,7 @@ fi
 
 cp /app/data/transmission-daemon/transmission.settings.json /app/data/transmission-daemon/settings.json
 
-./nginx.sh > /run/nginx.conf
+node ./writeNginxConfig.js
 
 chown -R cloudron:cloudron /app/data /tmp /run
 

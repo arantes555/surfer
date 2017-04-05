@@ -3,7 +3,6 @@
 const passport = require('passport')
 const path = require('path')
 const safe = require('safetydance')
-const bcrypt = require('bcryptjs')
 const LdapStrategy = require('passport-ldapjs').Strategy
 
 const LOCAL_AUTH_FILE = path.resolve(process.env.LOCAL_AUTH_FILE || './.users.json')
@@ -33,10 +32,8 @@ if (LDAP_URL && LDAP_USERS_BASE_DN) {
     if (!users) return res.send(401)
     if (!users[req.query.username]) return res.send(401)
 
-    bcrypt.compare(req.query.password, users[req.query.username].passwordHash, (error, valid) => {
-      if (error || !valid) return res.send(401)
-      next()
-    })
+    if (req.query.password && req.query.password === users[req.query.username]) return next()
+    else return res.send(401)
   }
 }
 

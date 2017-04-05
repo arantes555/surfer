@@ -19,7 +19,7 @@
       app.session.username = username
       app.session.password = password
 
-      // clearly not the best option
+      // clearly not the best option // TODO: That was not the best option, indeed...
       localStorage.username = username
       localStorage.password = password
 
@@ -58,10 +58,10 @@
   }
 
   function getPreviewUrl (entry, basePath) {
-    const path = '/_admin/img/'
+    const path = '/img/'
 
     if (entry.isDirectory) return path + 'directory.png'
-    if (mimeTypes.images.some(e => entry.filePath.endsWith(e))) return sanitize(basePath + '/' + entry.filePath)
+    if (mimeTypes.images.some(e => entry.filePath.endsWith(e))) return sanitize('/files' + basePath + '/' + entry.filePath)
     if (mimeTypes.text.some(e => entry.filePath.endsWith(e))) return path + 'text.png'
     if (mimeTypes.pdf.some(e => entry.filePath.endsWith(e))) return path + 'pdf.png'
     if (mimeTypes.html.some(e => entry.filePath.endsWith(e))) return path + 'html.png'
@@ -114,13 +114,11 @@
 
   function open (entry) {
     const path = sanitize(app.path + '/' + entry.filePath)
-
     if (entry.isDirectory) {
       window.location.hash = path
-      return
+    } else {
+      window.location.href = '/files' + encode(path)
     }
-
-    window.open(encode(path))
   }
 
   function up () {

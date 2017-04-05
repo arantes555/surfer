@@ -4,19 +4,10 @@ MAINTAINER Johannes Zellner <johannes@nebulon.de>
 ENV PATH /usr/local/node-6.9.5/bin:$PATH
 
 RUN apt-get update -y
-
-RUN mkdir -p /app/code
-WORKDIR /app/code
-
-ADD src /app/code/src
-ADD app /app/code/app
-ADD cli /app/code/cli
-
-ADD package.json server.js /app/code/
-RUN npm install --production
-
 RUN apt-get remove -y nginx-full && apt-get autoremove -y
 RUN apt-get install -y transmission-daemon libldap2-dev libpcre3-dev
+
+RUN mkdir -p /app/code
 
 RUN mkdir -p /tmp/nginx-ldap
 WORKDIR /tmp/nginx-ldap
@@ -37,16 +28,27 @@ RUN ./configure \
 RUN make install
 
 WORKDIR /app/code
+
+ADD package.json server.js /app/code/
+RUN npm install --production
+
+ADD src /app/code/src
+ADD app /app/code/app
+ADD cli /app/code/cli
+
 RUN rm -rf /tmp/nginx-ldap /tmp/nginx
 
 ADD start.sh README.md /app/code/
 
 ADD transmission/settings.json /app/code/transmission.settings.json
-ADD nginx/nginx.sh /app/code
+ADD nginx/writeNginxConfig.js /app/code
 
 ## Supervisor
 ADD supervisor/ /etc/supervisor/conf.d/
 RUN sed -e 's,^logfile=.*$,logfile=/run/supervisord.log,' -i /etc/supervisor/supervisord.conf
+
+## this is for debug only
+# ADD .users.json /app/code
 
 EXPOSE 8000
 
