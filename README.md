@@ -1,16 +1,16 @@
-# Surfer
+# River
 
-Surfer is a Simple static file server.
-It comes with a commandline tool to upload files from your local folders and a webinterface to manage files directly on the server.
+River is the Transmission torrent client, packaged with a simple file manager.
+It comes with a commandline tool to manage files from your local terminal.
 
 ## Installation
 
-[![Install](https://cloudron.io/img/button32.png)](https://cloudron.io/button.html?app=io.cloudron.surfer)
+[![Install](https://cloudron.io/img/button32.png)](https://cloudron.io/button.html?app=io.cloudron.river)
 
 or using the [Cloudron command line tooling](https://cloudron.io/references/cli.html)
 
 ```
-cloudron install --appstore-id io.cloudron.surfer
+cloudron install --appstore-id io.cloudron.river
 ```
 
 ## Building
@@ -19,39 +19,41 @@ cloudron install --appstore-id io.cloudron.surfer
 The app package can be built using the [Cloudron command line tooling](https://cloudron.io/references/cli.html).
 
 ```
-git clone https://github.com/nebulade/surfer.git
+git clone https://github.com/arantes555/surfer.git
 cd surfer
 cloudron build
-cloudron install
+cloudron install)
 ```
 
 ### Standalone
-Surfer can also be run standlone on any server:
+River's file manager can also be run standlone on any server:
 ```
-git clone https://github.com/nebulade/surfer.git
+git clone https://github.com/arantes555/surfer.git
 cd surfer
 npm install
-./server.js <public folder>
+./server.js <files folder>
 ```
-Use the `admin` tool to manage local users.
+Create a `.users.json` file with the format `{"user1":"password1", ...}` in your main directory to allow local users.
 
-## File management
+Transmission is not run in this case.
 
-The admin interface is available under the `/_admin` location or you can upload files using the commandline tool.
+## Usage
 
-First, install the surfer cli tool using npm.
+The file management interface is available under the `/` location or you can download/upload files using the commandline tool.
+
+First, install the river cli tool using npm.
 ```
-npm -g install cloudron-surfer
+npm -g install cloudron-river
 ```
 
 Login using your Cloudron credentials:
 ```
-surfer login <this app's url>
+river login <this app's url>
 ```
 
 Put some files:
 ```
-surfer put [file]
+river put [file]
 ```
 
 ## Testing

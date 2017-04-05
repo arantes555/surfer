@@ -46,21 +46,3 @@ th {
 .main {
     margin-bottom: 40px;
 }
-
-footer {
-    position: fixed;
-    background-color: #efefef;
-    bottom: 0;
-    width: 100%;
-    color: #555;
-    font-size: 14px;
-    padding: 5px;
-    z-index: 13;
-    opacity: .5;
-    -webkit-transition: all .25s;
-    transition: all .25s;
-}
-
-footer:hover {
-    opacity: 1;
-}

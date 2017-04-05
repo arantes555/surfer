@@ -27,18 +27,17 @@ RUN ./configure \
     --build=cloudron-river
 RUN make install
 
+RUN rm -rf /tmp/nginx-ldap /tmp/nginx
 WORKDIR /app/code
 
-ADD package.json server.js /app/code/
+ADD package.json /app/code/
 RUN npm install --production
 
 ADD src /app/code/src
 ADD app /app/code/app
 ADD cli /app/code/cli
 
-RUN rm -rf /tmp/nginx-ldap /tmp/nginx
-
-ADD start.sh README.md /app/code/
+ADD start.sh server.js README.md /app/code/
 
 ADD transmission/settings.json /app/code/transmission.settings.json
 ADD nginx/writeNginxConfig.js /app/code
