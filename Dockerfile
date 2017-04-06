@@ -35,7 +35,6 @@ RUN npm install --production
 
 ADD src /app/code/src
 ADD app /app/code/app
-ADD cli /app/code/cli
 
 ADD start.sh server.js README.md /app/code/
 
@@ -45,9 +44,6 @@ ADD nginx/writeNginxConfig.js /app/code
 ## Supervisor
 ADD supervisor/ /etc/supervisor/conf.d/
 RUN sed -e 's,^logfile=.*$,logfile=/run/supervisord.log,' -i /etc/supervisor/supervisord.conf
-
-## this is for debug only
-# ADD .users.json /app/code
 
 EXPOSE 8000
 

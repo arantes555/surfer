@@ -9,8 +9,8 @@ const path = require('path')
 const compression = require('compression')
 const session = require('express-session')
 const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
 const lastMile = require('connect-lastmile')
+const fs = require('fs')
 const multipart_ = require('./src/multipart')
 const mkdirp = require('mkdirp')
 const files_ = require('./src/files.js')
@@ -38,8 +38,11 @@ const files = files_(path.resolve(__dirname, process.argv[2] || 'files'))
 
 app.use(morgan('dev'))
 app.use(compression())
-app.use(cookieParser())
-app.use(session({secret: 'surfin surfin', resave: false, saveUninitialized: false})) // TODO: check `secret` doc
+app.use(session({
+  secret: fs.readFileSync('/app/data/session.secret', 'utf8'),
+  resave: false,
+  saveUninitialized: false
+}))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use('/login', passport.authenticate('cloudron'), (req, res) => res.redirect('/'))

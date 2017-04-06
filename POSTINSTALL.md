@@ -1,2 +1,2 @@
-To access the admin interface, visit `/_admin`.
-
+To access the files interface, visit `/`.
+To access the Transmission web interface, visit `/transmission/web/`.

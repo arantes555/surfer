@@ -10,9 +10,6 @@
     "file",
     "server"
   ],
-  "bin": {
-    "surfer": "./cli/surfer.js"
-  },
   "author": "Johannes Zellner <johannes@nebulon.de>",
   "license": "MIT",
   "repository": {
@@ -22,13 +19,10 @@
   "dependencies": {
     "async": "^1.5.2",
     "body-parser": "^1.15.0",
-    "colors": "^1.1.2",
-    "commander": "^2.8.1",
     "compression": "^1.5.0",
     "connect-lastmile": "0.0.10",
     "connect-timeout": "^1.6.2",
     "content-disposition": "^0.5.2",
-    "cookie-parser": "^1.4.1",
     "debug": "^2.2.0",
     "del": "^2.2.0",
     "express": "^4.13.4",
@@ -37,14 +31,10 @@
     "morgan": "^1.7.0",
     "multiparty": "^4.1.2",
     "passport": "^0.2.2",
-    "passport-cloudron": "^0.3.3",
-    "readline-sync": "^1.4.1",
-    "request": "^2.69.0",
-    "safetydance": "^0.1.1",
-    "superagent": "^1.7.2",
-    "underscore": "^1.8.3"
+    "passport-cloudron": "^0.3.3"
   },
   "devDependencies": {
+    "superagent": "^1.7.2",
     "expect.js": "^0.3.1",
     "mocha": "^2.4.5",
     "selenium-server-standalone-jar": "^2.52.0",
