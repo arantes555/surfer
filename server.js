@@ -16,6 +16,7 @@ const mkdirp = require('mkdirp')
 const files_ = require('./src/files.js')
 const contentDisposition = require('content-disposition')
 const CloudronStrategy = require('passport-cloudron')
+const LokiStore = require('connect-loki')(session)
 
 passport.serializeUser((user, done) => { done(null, user.uid) })
 
@@ -38,8 +39,13 @@ const files = files_(path.resolve(__dirname, process.argv[2] || 'files'))
 
 app.use(morgan('dev'))
 app.use(compression())
+app.use('/api/healthcheck', (req, res) => { res.status(200).send() })
 app.use(session({
   secret: fs.readFileSync('/app/data/session.secret', 'utf8'),
+  store: new LokiStore({
+    path: '/app/data/session.db',
+    logErrors: true
+  }),
   resave: false,
   saveUninitialized: false
 }))
@@ -50,18 +56,17 @@ app.use('/logout', (req, res) => {
   req.logout()
   res.redirect('/login')
 })
-app.use('/', isAuthenticated, express.static(path.resolve(__dirname, 'app')))
-app.use('/files', isAuthenticated, express.static(path.resolve(__dirname, process.argv[2] || 'files'), {
-  index: false,
-  setHeaders: (res, path) => res.setHeader('Content-Disposition', contentDisposition(path))
-}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false, limit: '100mb'}))
 router.get('/api/files/*', isAuthenticated, files.get)
 router.put('/api/files/*', isAuthenticated, multipart, files.put)
 router.delete('/api/files/*', isAuthenticated, files.del)
-router.get('/api/healthcheck', (req, res) => { res.status(200).send() })
 app.use(router)
+app.use('/files', isAuthenticated, express.static(path.resolve(__dirname, process.argv[2] || 'files'), {
+  index: false,
+  setHeaders: (res, path) => res.setHeader('Content-Disposition', contentDisposition(path))
+}))
+app.use('/', isAuthenticated, express.static(path.resolve(__dirname, 'app')))
 app.use(lastMile())
 
 const server = app.listen(3000, function () {

@@ -20,4 +20,4 @@ node ./writeNginxConfig.js
 chown -R cloudron:cloudron /app/data /tmp /run
 
 echo "Starting supervisor"
-/usr/bin/supervisord --configuration /etc/supervisor/supervisord.conf --nodaemon -i River
+exec /usr/bin/supervisord --configuration /etc/supervisor/supervisord.conf --nodaemon -i River

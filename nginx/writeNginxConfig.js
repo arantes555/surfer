@@ -70,6 +70,8 @@ http {
     client_body_in_file_only off;
     client_max_body_size 200M;
 
+    proxy_buffering off;
+
     proxy_temp_path /tmp/proxy_temp 1 2;
     fastcgi_temp_path /tmp/fastcgi_temp 1 2;
     uwsgi_temp_path  /tmp/uwsgi_temp 1 2;
