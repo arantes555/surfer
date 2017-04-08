@@ -86,7 +86,7 @@
     if (entry.isDirectory) {
       window.location.hash = path
     } else {
-      window.location.href = '/files' + encode(path)
+      window.location.href = '/files' + path
     }
   }
 
