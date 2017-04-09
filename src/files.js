@@ -71,7 +71,7 @@ function removeBasePath (filePath) {
 }
 
 function get (req, res, next) {
-  const filePath = decodeURIComponent(req.params[ 0 ])
+  const filePath = decodeURIComponent(req.params[0])
   let absoluteFilePath = getAbsolutePath(filePath)
   if (!absoluteFilePath) return next(new HttpError(403, 'Path not allowed'))
 
@@ -100,13 +100,13 @@ function get (req, res, next) {
       })
     }, (error, results) => {
       if (error) return next(new HttpError(500, error))
-      res.status(222).send({ entries: results })
+      res.status(222).send({entries: results})
     })
   })
 }
 
 function put (req, res, next) {
-  const filePath = decodeURIComponent(req.params[ 0 ])
+  const filePath = decodeURIComponent(req.params[0])
 
   if (!(req.files && req.files.file) && !req.query.directory) return next(new HttpError(400, 'missing file or directory'))
   if ((req.files && req.files.file) && req.query.directory) return next(new HttpError(400, 'either file or directory'))
@@ -139,7 +139,7 @@ function put (req, res, next) {
 }
 
 function del (req, res, next) {
-  const filePath = decodeURIComponent(req.params[ 0 ])
+  const filePath = decodeURIComponent(req.params[0])
   const recursive = !!req.query.recursive
   const dryRun = !!req.query.dryRun
 
@@ -159,10 +159,15 @@ function del (req, res, next) {
     // add globs to get file listing
     if (result.isDirectory()) absoluteFilePath += '/**'
 
-    rm(absoluteFilePath, { dryRun: dryRun, force: true })
+    // Escaping characters that would form pattern
+    absoluteFilePath = absoluteFilePath
+      .replace(/\[/g, '\\[')
+      .replace(/]/g, '\\]')
+
+    rm([absoluteFilePath], {dryRun: dryRun, force: true})
       .then(result => {
         result = result.map(removeBasePath)
-        next(new HttpSuccess(200, { entries: result }))
+        next(new HttpSuccess(200, {entries: result}))
       }, error => {
         console.error(error)
         next(new HttpError(500, 'Unable to remove'))

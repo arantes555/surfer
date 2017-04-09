@@ -37,9 +37,9 @@ const router = new express.Router()
 const multipart = multipart_({maxFieldsSize: 2 * 1024, limit: '512mb', timeout: 3 * 60 * 1000})
 const files = files_(path.resolve(__dirname, process.argv[2] || 'files'))
 
+app.use('/api/healthcheck', (req, res) => { res.status(200).send() })
 app.use(morgan('dev'))
 app.use(compression())
-app.use('/api/healthcheck', (req, res) => { res.status(200).send() })
 app.use(session({
   secret: fs.readFileSync('/app/data/session.secret', 'utf8'),
   store: new LokiStore({

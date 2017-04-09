@@ -50,7 +50,7 @@
 
     filePath = filePath ? sanitize(filePath) : '/'
 
-    superagent.get('/api/files/' + encode(filePath))
+    superagent.get('/api/files/' + filePath)
       .end((error, result) => {
         app.busy = false
 
@@ -105,7 +105,7 @@
       let done = 0
 
       function uploadFile (file) {
-        const path = encode(sanitize(app.path + '/' + file.name))
+        const path = sanitize(app.path + '/' + encode(file.name))
 
         const formData = new FormData()
         formData.append('file', file)
@@ -145,7 +145,7 @@
   function del (entry) {
     app.busy = true
 
-    const path = encode(sanitize(app.path + '/' + entry.filePath))
+    const path = sanitize(app.path + '/' + encode(entry.filePath))
 
     superagent.del('/api/files' + path)
       .query({
@@ -174,7 +174,7 @@
     app.busy = true
     app.createDirectoryError = null
 
-    const path = encode(sanitize(app.path + '/' + name))
+    const path = sanitize(app.path + '/' + encode(name))
 
     superagent.put('/api/files' + path)
       .query({
