@@ -27,8 +27,7 @@
     "TORRENT_PORT": {
       "title": "TORRENT_PORT",
       "description": "Torrent Port over which transmission listens",
-      "defaultValue": 51413,
-      "containerPort": 51413
+      "defaultValue": 51413
     }
   },
   "mediaLinks": [

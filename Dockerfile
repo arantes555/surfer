@@ -39,7 +39,7 @@ ADD app /app/code/app
 ADD start.sh server.js README.md /app/code/
 
 ADD transmission/settings.json /app/code/transmission.settings.json
-ADD nginx/writeNginxConfig.js /app/code
+ADD nginx/writeNginxConfig.js transmission/writeTransmissionConfig.js /app/code/
 
 ## Supervisor
 ADD supervisor/ /etc/supervisor/conf.d/

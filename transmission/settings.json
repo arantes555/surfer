@@ -5,7 +5,6 @@
   "download-limit-enabled": false,
   "encryption": true,
   "max-peers-global": 200,
-  "peer-port": 51413,
   "pex-enabled": true,
   "port-forwarding-enabled": true,
   "rpc-authentication-required": false,
