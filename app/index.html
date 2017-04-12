@@ -132,7 +132,7 @@
                                 <img v-bind:src="entry.previewUrl" height="48px" width="48px"/>
                             </th>
                             <th>{{ entry.filePath }}</th>
-                            <th>{{ entry.size | prettyFileSize }}</th>
+                            <th>{{ entry.isDirectory ? '--' : prettyFileSize(entry.size) }}</th>
                             <th><span v-my-tooltip="foobar" data-toggle="tooltip" title="{{ entry.mtime }}">{{ entry.mtime | prettyDate }}</span></th>
                             <th style="text-align: right;"><button class="btn btn-sm btn-danger" v-on:click.stop="delAsk(entry)"><i class="fa fa-trash"></i></button></th>
                         </tr>

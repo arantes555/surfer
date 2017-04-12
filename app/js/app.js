@@ -231,7 +231,8 @@
       delAsk: delAsk,
       del: del,
       createDirectoryAsk: createDirectoryAsk,
-      createDirectory: createDirectory
+      createDirectory: createDirectory,
+      prettyFileSize: filesize
     }
   })
 
