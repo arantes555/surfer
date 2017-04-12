@@ -1,5 +1,6 @@
 test/*
 node_modules/*
-files/*
+data/
 .git/*
 screenshots
+npm-debug.log

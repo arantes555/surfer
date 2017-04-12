@@ -1,4 +1,5 @@
 node_modules/
-files/
+data/
 .users.json
 .idea
+npm-debug.log

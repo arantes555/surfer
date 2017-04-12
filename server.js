@@ -22,12 +22,16 @@ passport.serializeUser((user, done) => { done(null, user.uid) })
 
 passport.deserializeUser((id, done) => { done(null, {uid: id}) })
 
-passport.use(new CloudronStrategy(
-  {callbackURL: process.env.APP_ORIGIN + '/login'},
-  (token, tokenSecret, profile, done) => { done(null, {uid: profile.id}) }
-))
+const onCloudron = Boolean(process.env.CLOUDRON)
 
-const isAuthenticated = (req, res, next) => req.isAuthenticated()
+if (onCloudron) {
+  passport.use(new CloudronStrategy(
+    {callbackURL: process.env.APP_ORIGIN + '/login'},
+    (token, tokenSecret, profile, done) => { done(null, {uid: profile.id}) }
+  ))
+}
+
+const isAuthenticated = (req, res, next) => (req.isAuthenticated() || !onCloudron) // When not on Cloudron, no auth
   ? next()
   : res.redirect('/login')
 
@@ -35,15 +39,17 @@ const app = express()
 const router = new express.Router()
 
 const multipart = multipart_({maxFieldsSize: 2 * 1024, limit: '512mb', timeout: 3 * 60 * 1000})
-const files = files_(path.resolve(__dirname, process.argv[2] || 'files'))
+const baseDir = onCloudron ? '/app/data' : 'data'
+const filesPath = path.resolve(__dirname, process.argv[2] || `${baseDir}/files`)
+const files = files_(filesPath)
 
 app.use('/api/healthcheck', (req, res) => { res.status(200).send() })
 app.use(morgan('dev'))
 app.use(compression())
 app.use(session({
-  secret: fs.readFileSync('/app/data/session.secret', 'utf8'),
+  secret: fs.readFileSync(path.resolve(__dirname, `${baseDir}/session.secret`), 'utf8'),
   store: new LokiStore({
-    path: '/app/data/session.db',
+    path: path.resolve(__dirname, `${baseDir}/session.db`),
     logErrors: true
   }),
   resave: false,
@@ -62,7 +68,7 @@ router.get('/api/files/*', isAuthenticated, files.get)
 router.put('/api/files/*', isAuthenticated, multipart, files.put)
 router.delete('/api/files/*', isAuthenticated, files.del)
 app.use(router)
-app.use('/files', isAuthenticated, express.static(path.resolve(__dirname, process.argv[2] || 'files'), {
+app.use('/files', isAuthenticated, express.static(filesPath, {
   index: false,
   setHeaders: (res, path) => res.setHeader('Content-Disposition', contentDisposition(path))
 }))
@@ -72,9 +78,9 @@ app.use(lastMile())
 const server = app.listen(3000, function () {
   const {host, port} = server.address()
 
-  const basePath = path.resolve(__dirname, process.argv[2] || 'files')
-  mkdirp.sync(basePath)
+  mkdirp.sync(filesPath)
 
+  if (!onCloudron) console.warn('NOT running on Cloudron! Auth is disabled')
   console.log('River listening at http://%s:%s', host, port)
-  console.log('Using base path', basePath)
+  console.log('Using base path', filesPath)
 })
