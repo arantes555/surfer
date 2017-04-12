@@ -157,11 +157,11 @@
                             <th></th>
                             <th></th>
                         </tr>
-                        <tr v-for="entry in entries" v-on:click="open(entry)" class="hand">
+                        <tr v-for="entry in entries">
                             <th>
                                 <img v-bind:src="entry.previewUrl" height="48px" width="48px"/>
                             </th>
-                            <th>{{ entry.filePath }}</th>
+                            <th><a :href="getUrl(entry)">{{ entry.filePath }}</a></th>
                             <th>{{ entry.isDirectory ? '--' : prettyFileSize(entry.size) }}</th>
                             <th><span v-my-tooltip="date" data-toggle="tooltip" title="{{ entry.mtime }}">{{ entry.mtime | prettyDate }}</span></th>
                           <th style="text-align: right;">

@@ -81,13 +81,10 @@
       })
   }
 
-  function open (entry) {
+  function getUrl (entry) {
     const path = sanitize(app.path + '/' + entry.filePath)
-    if (entry.isDirectory) {
-      window.location.hash = path
-    } else {
-      window.location.href = '/files' + path
-    }
+    if (entry.isDirectory) return '#' + path
+    else return '/files' + path
   }
 
   function up () {
@@ -270,7 +267,7 @@
     methods: {
       logout: logout,
       loadDirectory: loadDirectory,
-      open: open,
+      getUrl: getUrl,
       up: up,
       upload: upload,
       delAsk: delAsk,
