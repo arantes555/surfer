@@ -230,6 +230,7 @@
       upload: upload,
       delAsk: delAsk,
       del: del,
+      refresh: refresh,
       createDirectoryAsk: createDirectoryAsk,
       createDirectory: createDirectory,
       prettyFileSize: filesize
