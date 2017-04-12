@@ -43,6 +43,11 @@ th {
     vertical-align: middle !important;
 }
 
+button {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 .main {
     margin-bottom: 40px;
 }

@@ -202,6 +202,48 @@
       })
   }
 
+  function renameAsk (entry) {
+    $('#modalRename').modal('show')
+    app.renameOld = entry.filePath
+    app.renameNew = app.renameOld
+    app.renameError = null
+    $('#inputRename').select()
+  }
+
+  function rename (oldName, newName) {
+    app.busy = true
+    app.renameError = null
+
+    const oldPath = sanitize(app.path + '/' + encode(oldName))
+    const newPath = sanitize(app.path + '/' + encode(newName))
+
+    superagent.put('/api/files' + newPath)
+      .query({
+        from: oldPath
+      })
+      .end((error, result) => {
+        app.busy = false
+
+        if (result && result.statusCode === 401) return logout()
+        if (result && result.statusCode === 403) {
+          app.renameError = 'Name not allowed'
+          return
+        }
+        if (result && result.statusCode === 409) {
+          app.renameError = 'Already exists'
+          return
+        }
+        if (result && result.statusCode !== 201) return console.error('Error renaming file: ', result.statusCode)
+        if (error) return console.error(error)
+
+        app.renameOld = ''
+        app.renameNew = ''
+        refresh()
+
+        $('#modalRename').modal('hide')
+      })
+  }
+
   Vue.filter('prettyDate', (value) => {
     const d = new Date(value)
     return d.toDateString()
@@ -220,6 +262,9 @@
       deleteData: {},
       createDirectoryData: '',
       createDirectoryError: null,
+      renameOld: '',
+      renameNew: '',
+      renameError: null,
       entries: []
     },
     methods: {
@@ -233,6 +278,8 @@
       refresh: refresh,
       createDirectoryAsk: createDirectoryAsk,
       createDirectory: createDirectory,
+      renameAsk: renameAsk,
+      rename: rename,
       prettyFileSize: filesize
     }
   })

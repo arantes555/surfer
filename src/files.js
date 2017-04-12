@@ -55,10 +55,6 @@ function createDirectory (targetPath, callback) {
   })
 }
 
-function isProtected (targetPath) {
-  return targetPath.indexOf(getAbsolutePath('_admin')) === 0
-}
-
 function getAbsolutePath (filePath) {
   const absoluteFilePath = path.resolve(path.join(gBasePath, filePath))
 
@@ -72,7 +68,7 @@ function removeBasePath (filePath) {
 
 function get (req, res, next) {
   const filePath = decodeURIComponent(req.params[0])
-  let absoluteFilePath = getAbsolutePath(filePath)
+  const absoluteFilePath = getAbsolutePath(filePath)
   if (!absoluteFilePath) return next(new HttpError(403, 'Path not allowed'))
 
   fs.stat(absoluteFilePath, (error, result) => {
@@ -105,21 +101,24 @@ function get (req, res, next) {
   })
 }
 
-function put (req, res, next) {
+function put (req, res, next) { // TODO: put a 'force' option to authorize overwrite? (authorized for now)
   const filePath = decodeURIComponent(req.params[0])
+  console.log('filePath', filePath)
+  console.log('req.params', req.params)
 
-  if (!(req.files && req.files.file) && !req.query.directory) return next(new HttpError(400, 'missing file or directory'))
-  if ((req.files && req.files.file) && req.query.directory) return next(new HttpError(400, 'either file or directory'))
+  if (!(req.files && req.files.file) && !req.query.directory && !req.query.from) return next(new HttpError(400, 'missing file, directory, or origin'))
+  const XOR = (...args) => args.length >= 2 ? XOR(...args.slice(2).concat((args[0] && !args[1]) || (args[1] && !args[0]))) : args[0]
+  if (!XOR((req.files && req.files.file), req.query.directory, req.query.from)) return next(new HttpError(400, 'either file, directory, or origin'))
 
-  let absoluteFilePath = getAbsolutePath(filePath)
-  if (!absoluteFilePath || isProtected(absoluteFilePath)) return next(new HttpError(403, 'Path not allowed'))
+  const absoluteFilePath = getAbsolutePath(filePath)
+  if (!absoluteFilePath) return next(new HttpError(403, 'Path not allowed'))
 
   fs.stat(absoluteFilePath, (error, result) => {
     if (error && error.code !== 'ENOENT') return next(new HttpError(500, error))
 
     debug('put', absoluteFilePath)
 
-    if (result && req.query.directory) return next(new HttpError(409, 'name already exists'))
+    if (result && (req.query.directory || req.query.from)) return next(new HttpError(409, 'name already exists'))
     if (result && result.isDirectory()) return next(new HttpError(409, 'cannot put on directories'))
 
     if (req.query.directory) {
@@ -127,26 +126,33 @@ function put (req, res, next) {
         if (error) return next(new HttpError(500, error))
         next(new HttpSuccess(201, {}))
       })
+    } else if (req.query.from) {
+      const fromFilePath = getAbsolutePath(req.query.from)
+      if (!fromFilePath) return next(new HttpError(403, 'Path not allowed'))
+      fs.stat(fromFilePath, (error, result) => {
+        if (error) return next(new HttpError(500, error))
+        fs.rename(fromFilePath, absoluteFilePath, (error) => {
+          if (error) return next(new HttpError(500, error))
+          next(new HttpSuccess(201, {}))
+        })
+      })
     } else if (!result || result.isFile()) {
       return copyFile(req.files.file.path, absoluteFilePath, (error) => {
         if (error) return next(new HttpError(500, error))
         next(new HttpSuccess(201, {}))
       })
+    } else {
+      return next(new HttpError(500, 'unsupported type'))
     }
-
-    return next(new HttpError(500, 'unsupported type'))
   })
 }
 
 function del (req, res, next) {
   const filePath = decodeURIComponent(req.params[0])
-  const recursive = !!req.query.recursive
   const dryRun = !!req.query.dryRun
 
   let absoluteFilePath = getAbsolutePath(filePath)
   if (!absoluteFilePath) return next(new HttpError(404, 'Not found'))
-
-  if (isProtected(absoluteFilePath)) return next(new HttpError(403, 'Path not allowed'))
 
   // absoltueFilePath has to have the base path prepended
   if (absoluteFilePath.length <= gBasePath.length) return next(new HttpError(404, 'Not found'))
@@ -154,7 +160,7 @@ function del (req, res, next) {
   fs.stat(absoluteFilePath, (error, result) => {
     if (error) return next(new HttpError(404, error))
 
-    if (result.isDirectory() && !recursive) return next(new HttpError(403, 'Is directory'))
+    if (result.isDirectory() && !req.query.recursive) return next(new HttpError(403, 'Is directory'))
 
     // add globs to get file listing
     if (result.isDirectory()) absoluteFilePath += '/**'
