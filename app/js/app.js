@@ -144,6 +144,10 @@
     app.$els.upload.click()
   }
 
+  $('#modalDelete').on('shown.bs.modal', function () {
+    $('#deleteNoBtn').focus()
+  })
+
   function delAsk (entry) {
     $('#modalDelete').modal('show')
     app.deleteData = entry
@@ -170,6 +174,10 @@
         $('#modalDelete').modal('hide')
       })
   }
+
+  $('#modalcreateDirectory').on('shown.bs.modal', function () {
+    $('#inputDirectoryName').focus()
+  })
 
   function createDirectoryAsk () {
     $('#modalcreateDirectory').modal('show')
@@ -209,12 +217,15 @@
       })
   }
 
+  $('#modalRename').on('shown.bs.modal', function () {
+    $('#inputRename').select()
+  })
+
   function renameAsk (entry) {
     $('#modalRename').modal('show')
     app.renameOld = entry.filePath
     app.renameNew = app.renameOld
     app.renameError = null
-    $('#inputRename').select()
   }
 
   function move (oldPath, newPath, callback) {
@@ -308,6 +319,7 @@
     $('tr').removeClass('dragged-over')
     dragCounter = {}
   }
+
   $(window).on('dragend', resetDrag)
 
   Vue.filter('prettyDate', (value) => {

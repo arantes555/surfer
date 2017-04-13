@@ -50,8 +50,8 @@
                     <h5 v-show="deleteData.isDirectory">Really delete directory <span style="font-weight: bold;">{{ deleteData.filePath }}</span> and all its content?</h5>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-danger" v-on:click="del(deleteData)">Yes</button>
+                    <button type="button" id="deleteNoBtn" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="button" id="deleteYesBtn" class="btn btn-danger" v-on:click="del(deleteData)">Yes</button>
                 </div>
             </div>
         </div>
