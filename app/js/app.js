@@ -207,38 +207,68 @@
     $('#inputRename').select()
   }
 
-  function rename (oldName, newName) {
+  function move (oldPath, newPath, callback) {
     app.busy = true
+
+    superagent.put('/api/files' + newPath)
+      .query({
+        from: decode(oldPath)
+      })
+      .end((error, result) => {
+        app.busy = false
+
+        if (result && result.statusCode === 401) {
+          callback('Unauthorized')
+          return logout()
+        }
+        if (result && result.statusCode === 403) return callback('Name not allowed')
+        if (result && result.statusCode === 409) return callback('Already exists')
+        if (result && result.statusCode !== 201) return callback('Error moving file: ', result.statusCode)
+        if (error) return callback(error.toString())
+        callback()
+      })
+  }
+
+  function rename (oldName, newName) {
     app.renameError = null
 
     const oldPath = sanitize(app.path + '/' + encode(oldName))
     const newPath = sanitize(app.path + '/' + encode(newName))
 
-    superagent.put('/api/files' + newPath)
-      .query({
-        from: oldPath
-      })
-      .end((error, result) => {
-        app.busy = false
+    move(oldPath, newPath, function (error) {
+      if (error) {
+        app.renameError = error
+        return
+      }
+      app.renameOld = ''
+      app.renameNew = ''
+      refresh()
+      $('#modalRename').modal('hide')
+    })
+  }
 
-        if (result && result.statusCode === 401) return logout()
-        if (result && result.statusCode === 403) {
-          app.renameError = 'Name not allowed'
-          return
-        }
-        if (result && result.statusCode === 409) {
-          app.renameError = 'Already exists'
-          return
-        }
-        if (result && result.statusCode !== 201) return console.error('Error renaming file: ', result.statusCode)
-        if (error) return console.error(error)
+  function onDrag (event, entry) {
+    event.dataTransfer.setData('text', entry.filePath)
+  }
 
-        app.renameOld = ''
-        app.renameNew = ''
-        refresh()
+  function shouldAllowDrop (event, entry) {
+    if (entry === '..' || entry.isDirectory) event.preventDefault() // Allow drop only on directories
+  }
 
-        $('#modalRename').modal('hide')
-      })
+  function onDrop (event, entry) {
+    if (!(entry === '..' || entry.isDirectory)) throw new Error('Trying to move to another file') // just to be safe
+    const origin = event.dataTransfer.getData('text')
+    if (origin === entry.filePath) return
+    const originPath = sanitize(app.path + '/' + encode(origin))
+    const destinationDir = entry === '..'
+      ? app.path.replace(/\/$/, '').split('/').slice(0, -1).join('/') + '/' // removing last leaf from current path
+      : app.path + '/' + encode(entry.filePath) // Adding dir name to current path
+    const destinationPath = sanitize(destinationDir + '/' + encode(origin))
+
+    move(originPath, destinationPath, function (error) {
+      if (error) return console.error(error)
+      refresh()
+    })
   }
 
   Vue.filter('prettyDate', (value) => {
@@ -277,7 +307,10 @@
       createDirectory: createDirectory,
       renameAsk: renameAsk,
       rename: rename,
-      prettyFileSize: filesize
+      prettyFileSize: filesize,
+      onDrag: onDrag,
+      shouldAllowDrop: shouldAllowDrop,
+      onDrop: onDrop
     }
   })
 

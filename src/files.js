@@ -103,8 +103,6 @@ function get (req, res, next) {
 
 function put (req, res, next) { // TODO: put a 'force' option to authorize overwrite? (authorized for now)
   const filePath = decodeURIComponent(req.params[0])
-  console.log('filePath', filePath)
-  console.log('req.params', req.params)
 
   if (!(req.files && req.files.file) && !req.query.directory && !req.query.from) return next(new HttpError(400, 'missing file, directory, or origin'))
   const XOR = (...args) => args.length >= 2 ? XOR(...args.slice(2).concat((args[0] && !args[1]) || (args[1] && !args[0]))) : args[0]

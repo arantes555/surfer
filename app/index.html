@@ -150,18 +150,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-show="path !== '/'" v-on:click="up()" class="hand">
+                        <tr v-show="path !== '/'"
+                            v-on:click="up()"
+                            class="hand"
+                            @dragover="shouldAllowDrop($event, '..')"
+                            @drop.prevent="onDrop($event, '..')">
                             <th><i class="fa fa-chevron-up"></i></th>
                             <th>..</th>
                             <th></th>
                             <th></th>
                             <th></th>
                         </tr>
-                        <tr v-for="entry in entries">
-                            <th>
-                                <img v-bind:src="entry.previewUrl" height="48px" width="48px"/>
-                            </th>
-                            <th><a :href="getUrl(entry)">{{ entry.filePath }}</a></th>
+                        <tr v-for="entry in entries"
+                            draggable="true"
+                            @dragstart.capture="onDrag($event, entry)"
+                            @dragover="shouldAllowDrop($event, entry)"
+                            @drop.prevent="onDrop($event, entry)">
+                            <th><img v-bind:src="entry.previewUrl" height="48px" width="48px"/></th>
+                            <th><a draggable="false" :href="getUrl(entry)">{{ entry.filePath }}</a></th>
                             <th>{{ entry.isDirectory ? '--' : prettyFileSize(entry.size) }}</th>
                             <th><span v-my-tooltip="date" data-toggle="tooltip" title="{{ entry.mtime }}">{{ entry.mtime | prettyDate }}</span></th>
                           <th style="text-align: right;">
