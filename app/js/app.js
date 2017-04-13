@@ -46,6 +46,7 @@
   }
 
   function loadDirectory (filePath) {
+    resetDrag()
     app.busy = true
 
     filePath = filePath ? sanitize(filePath) : '/'
@@ -85,6 +86,15 @@
     const path = sanitize(app.path + '/' + entry.filePath)
     if (entry.isDirectory) return '#' + path
     else return '/files' + path
+  }
+
+  function open (entry) {
+    const path = sanitize(app.path + '/' + entry.filePath)
+    if (entry.isDirectory) {
+      window.location.hash = path
+    } else {
+      window.location.href = '/files' + path
+    }
   }
 
   function up () {
@@ -271,6 +281,35 @@
     })
   }
 
+  let dragCounter = {}
+
+  function onDragEnter (event, entry) {
+    if (entry === '..' || entry.isDirectory) {
+      const name = (entry === '..') ? '..' : entry.filePath
+      dragCounter[name] = (dragCounter[name] || 0) + 1
+      if (event.target.tagName === 'TR') $(event.target).addClass('dragged-over')
+      else $(event.target).parent('tr').addClass('dragged-over')
+    }
+  }
+
+  function onDragLeave (event, entry) {
+    if (entry === '..' || entry.isDirectory) {
+      const name = (entry === '..') ? '..' : entry.filePath
+      dragCounter[name] = dragCounter[name] - 1
+      if (dragCounter[name] <= 0) {
+        dragCounter[name] = 0
+        if (event.target.tagName === 'TR') $(event.target).removeClass('dragged-over')
+        else $(event.target).parent('tr').removeClass('dragged-over')
+      }
+    }
+  }
+
+  function resetDrag () {
+    $('tr').removeClass('dragged-over')
+    dragCounter = {}
+  }
+  $(window).on('dragend', resetDrag)
+
   Vue.filter('prettyDate', (value) => {
     const d = new Date(value)
     return d.toDateString()
@@ -302,6 +341,7 @@
       upload: upload,
       delAsk: delAsk,
       del: del,
+      open: open,
       refresh: refresh,
       createDirectoryAsk: createDirectoryAsk,
       createDirectory: createDirectory,
@@ -310,7 +350,9 @@
       prettyFileSize: filesize,
       onDrag: onDrag,
       shouldAllowDrop: shouldAllowDrop,
-      onDrop: onDrop
+      onDrop: onDrop,
+      onDragEnter: onDragEnter,
+      onDragLeave: onDragLeave
     }
   })
 
