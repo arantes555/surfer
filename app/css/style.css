@@ -57,12 +57,16 @@ th button {
     margin-bottom: 5px;
 }
 
-tr.dragged-over {
-    background-color: #d5d5d5;
+th a:focus {
+    outline: none;
 }
 
-tr * {
-    pointer-events: none;
+tr {
+    cursor: pointer;
+}
+
+tr.dragged-over {
+    background-color: #d5d5d5;
 }
 
 tr th button.btn {
