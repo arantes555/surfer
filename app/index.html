@@ -147,19 +147,19 @@
           <thead>
           <tr>
             <th @click="selectSort('type')">Type
-              <i v-show="sortBy === 'type'" class="fa"
+              <i :style="{visibility: sortBy === 'type' ? 'visible' : 'hidden'}" class="fa"
                  :class="sortOrder === 1 ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
             </th>
             <th @click="selectSort('name')">Name
-              <i v-show="sortBy === 'name'" class="fa"
+              <i :style="{visibility: sortBy === 'name' ? 'visible' : 'hidden'}" class="fa"
                  :class="sortOrder === 1 ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
             </th>
             <th @click="selectSort('size')">Size
-              <i v-show="sortBy === 'size'" class="fa"
+              <i :style="{visibility: sortBy === 'size' ? 'visible' : 'hidden'}" class="fa"
                  :class="sortOrder === 1 ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
             </th>
             <th @click="selectSort('date')">Modified
-              <i v-show="sortBy === 'date'" class="fa"
+              <i :style="{visibility: sortBy === 'date' ? 'visible' : 'hidden'}" class="fa"
                  :class="sortOrder === 1 ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
             </th>
             <th style="text-align: right;">Actions</th>
