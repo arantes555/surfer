@@ -18,6 +18,9 @@ const contentDisposition = require('content-disposition')
 const CloudronStrategy = require('passport-cloudron')
 const LokiStore = require('connect-loki')(session)
 
+const app = express()
+const router = new express.Router()
+
 passport.serializeUser((user, done) => { done(null, user.uid) })
 
 passport.deserializeUser((id, done) => { done(null, {uid: id}) })
@@ -29,14 +32,12 @@ if (onCloudron) {
     {callbackURL: process.env.APP_ORIGIN + '/login'},
     (token, tokenSecret, profile, done) => { done(null, {uid: profile.id}) }
   ))
+  app.set('trust proxy', 1)
 }
 
 const isAuthenticated = (req, res, next) => (req.isAuthenticated() || !onCloudron) // When not on Cloudron, no auth
   ? next()
   : res.redirect('/login')
-
-const app = express()
-const router = new express.Router()
 
 const multipart = multipart_({maxFieldsSize: 2 * 1024, limit: '512mb', timeout: 3 * 60 * 1000})
 const baseDir = onCloudron ? '/app/data' : 'data'
@@ -53,7 +54,14 @@ app.use(session({
     logErrors: true
   }),
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  name: 'river.sid',
+  cookie: {
+    path: '/',
+    httpOnly: true,
+    secure: onCloudron,
+    maxAge: 600000
+  }
 }))
 app.use(passport.initialize())
 app.use(passport.session())
