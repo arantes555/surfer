@@ -80,3 +80,7 @@ tr th button.btn {
 .btn-refresh {
     font-size: 18px;
 }
+
+form {
+    display: inline-block;
+}

@@ -109,12 +109,13 @@
               return entry
             })
             this.path = filePath
-            this.pathParts = decode(filePath).split('/').filter(e => !!e).map((e, i, a) => {
-              return {
+            this.pathParts = decode(filePath)
+              .replace(/^\//, '')
+              .split('/')
+              .map((e, i, a) => ({
                 name: e,
                 link: '#' + sanitize('/' + a.slice(0, i).join('/') + '/' + e)
-              }
-            })
+              }))
 
             // update in case this was triggered from code
             window.location.hash = this.path
