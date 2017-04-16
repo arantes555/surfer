@@ -60,7 +60,7 @@ app.use(session({
     path: '/',
     httpOnly: true,
     secure: onCloudron,
-    maxAge: 600000
+    maxAge: /* 1 week: */ 7 /* j */ * 24 /* h */ * 60 /* min */ * 60 /* s */ * 1000 /* ms */
   }
 }))
 app.use(passport.initialize())
